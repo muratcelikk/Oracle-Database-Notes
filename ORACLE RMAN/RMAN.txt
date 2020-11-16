@@ -1,0 +1,88 @@
+Önce BACKUP klasörü oluþtur;
+$mkdir /u01/backup
+
+sqlplus / as sysdba
+connected to:
+
+****Archivelog açmak için;***********https://docs.oracle.com/cd/B19306_01/server.102/b14357/ch12007.htm
+SQL>shut immediate;
+SQL>startup mount;
+SQL>alter database archivelog; (archivelog modunu açýyoruz)
+--SQL>alter database open;
+--SQL>archive log list; (archivelog açýk mý kapalý mý?)
+
+********YEDEK ALMAK ÝÇÝN*******************
+HOT BACKUP:(archivelog mode açýk olmalý)
+SQL>archive log list; (Archivelog açýksa yedek alabiliriz.)
+
+$rman target /
+run {
+backup database format '/u01/backup/DBSON_%T_%U' plus archivelog format '/u01/backup/ARCH_%T_%U';
+backup current controlfile format '/u01/backup/CFILE_%T_%U';
+}
+
+**SÝLÝNECEK DBFÝLE...****
+SQL>select name from v$dbfile; (silinecek datafile dosyalarý)
+SQL>exit
+$cd /u01/qpp/oracle/oradata/DB11G/
+$ls
+içindeki dosyalarý sil.
+
+$/u01/backup
+rman>restore controlfile from '/u01/backup/CFÝLE_20190619..._1_1';
+rman>alter database mount;
+rman>restore database preview; (hangi scn görürüz.)
+datafile fuziness...
+Rman>run {
+set until sequence 12; (sequencete bir üstü)
+restore database;
+recover database;
+}
+rman> alter database open resetlogs;
+
+
+*-*-*-*-*-*-----------------------------------------------
+COLD BACKUP:(archivelog kapalý)
+SQL>select open_mode from v$database; (mount mode tamý)
+
+-- Sýk kullanýlan formatlarý aþaðýda açýkladým.
+
+%a     Varolan veritabaný aktivasyon idsi 
+%A     0 ile tamamlanmýþ aktivasyon idsi 
+%c     Maksimum deðeri 256 olan backup piece kopya numarasý 
+%d     Veritabaný adý 
+%D     DD formatýnda gün bilgisi 
+%e     Arþiv log dosyasý sýra numarasý 
+%f     Absolute dosya numarasý 
+%F     DBID, gün ay, yýl ve benzersiz bir sýra numarasý içerir. 
+%h     Arþiv redo log thread numarasý 
+%I     DBID 
+%M     MM formatýnda ay bilgisi 
+%n     Veritabaný adý 
+%N     Tablespace adý. Veri dosyasý ve image copy yedekle set edilebilir. 
+%p     Backup set içindeki backup piece numarasýdýr 
+%r     Resetlogs ID 
+%s     Backup set numarasý 
+%S     0 ile tamamlanmýþ sýra numarasý 
+%t     Backup set zaman bilgisidir. Saniye bilgiside içeren 4 byte lýk bir deðerdir. 
+%T     Gregorian takviminde YYYYMMDD formatýnda olan yýl, ay ve gün bilgisidir 
+%u     Backup set veya image copy yedeðin numarasý ve oluþturulma zamanýný içeren 
+       8 karakterlik bir bilgidir. 
+%U     Sistem tarafýndan üretilen benzersiz bir numaradýr. 
+%Y     YYYY formatýndaki yýl bilgisidir 
+
+spfile varmý;
+SQL>show parametre spfile;
+SQL>create spfile from pfile;
+yetki yoksa
+SQL>conn / sysoper;
+SQL>create spfile from pfile;
+SQL>startup force;
+
+NOT:TRACE dosyasýný görebilmek için:
+SQL>show parameter dump_dest (trace adresi)
+
+SQL>select name from v$datafile; (datafile dosyalarý görmek için)
+SQL>select member from v$logfile; 
+SQL>select name from v$controlfile; (controlfile dosyalarý görmek için-lokasyon)
+SQL>show parameter diag;
