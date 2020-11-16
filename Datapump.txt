@@ -1,0 +1,84 @@
+******************export*********************************directory/
+$mkdir -p /u01/backups/datapump  (datapump dizini oluþtur)
+
+$sqlplus / as sysdba
+SQL>create or replace directory test as '/u01/backups/datapump'; (yarattýðýmýz dizini datapump olarak atýyoruz)("test" klasörü)
+directory created.
+-------grant read, write on directory test to hr;  (belli bir kullanýcýya yetki vermek için)
+
+-----hr kullanýcýsý oluþtur yetki ver.--------
+SQL>create user hr identified by hr;
+--user created.
+SQL>grant sysdba to hr;
+--grant succeeded.
+-SQL>alter user hr identified by hr;
+--user altered.
+SQL>alter user hr account unlock;
+--user altered.
+SQL>grant all privileges to hr;
+--grant succeeded.
+SQL>exit
+klasör oluþtur.
+
+$sqlplus hr/hr@PRODDB  (as sysdba)(PRODDB=oracle SID sidir.) 
+
+sql>create table okul
+(
+ad varchar2(20),
+soyad varchar2(50)
+);
+----tablo created
+
+SQL>insert into okul values('murat','celik');
+SQL>insert into okul values('semih','algýn');
+1 row created
+SQL>commit;
+commit complete.
+SQL>select*from okul;  (tabloyu ve eklediðimiz deðerleri görürüz.)
+SQL>exit
+$expdp hr/hr@PRODDB tables=okul directory=test dumpfile=okul.dmp logfile=exokul.log (export ederiz. dýþa çýkarýrýz.)
+
+*******Diðer DATABASE geç.************
+dbca yeni database oluþtur. SID sine "DB" ismi ver. 
+process 300 
+ULTF32 2.kutucuk
+schemalarý seçme.
+
+$export ORACLE_SID=DB
+$sqlplus / as sysdba
+SQL>show parameter service_names; (hangi database'de olduðumuzu görürüz.)
+
+$sqlplus / as sysdba
+SQL>create user hr identified by hr;
+--user created.
+SQL>grant sysdba to hr;
+--grant succeeded.
+-SQL>alter user hr identified by hr;
+--user altered.
+SQL>alter user hr account unlock;
+--user altered.
+SQL>grant all privileges to hr;
+--grant succeeded.
+SQL>exit
+
+
+**************import*********************
+$sqlplus hr/hr@DB
+SQL>create or replace directory test as '/u01/backups/datapump'; (dosyayý tekrar oluþturmazsak diðer dbdeki yeri görmez.)
+--directory created.
+
+$impdp hr/hr@DB tables=okul directory=test dumpfile=okul.dmp logfile=exokul.log  (import ederiz. çekeriz)
+
+$sqlplus hr/hr@DB
+SQL>select*from okul; (çeker ve tabloyu görürüz.)
+
+
+NOT:as sysdba atmak için "privileges" veririz.
+ 
+-----------remap---------
+		    kendisi			 :yeni ad.
+$impdp hr/hr@PRODDB tables=okul remap_tables=okul:hr.okul directory=test dumpfile=okul.dmp logfile=exokul.log  (import ederiz. çekeriz)
+                    append tables=okul to tables=
+
+
+

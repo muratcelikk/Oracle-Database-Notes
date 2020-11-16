@@ -1,0 +1,73 @@
+SPFILE, PFILE Parametre Dosyalarý
+Veritabaný ayarlarýnýn saklandýðý iki dosyadýr,görevleri aynýdýr.Oracle instance baþlarken
+parametre file(spfile ya da pfile) okuyup o ayarlarla nomount moda geçer, ve sonra sýrasýyla mount ve open moda geçer.Control file lokasyonlarý,Db_name,PGA deðeri,SGA deðeri vb önemli bilgileri tutar.
+
+Oracle instance baþlarken sýrasýyla;
+spfileSID.ora
+spfile.ora
+initSID.ora
+init.ora
+
+dosyalarýna bakar sýrayla, ilk hangisini bulursa onunla baþlar.Bulamazsa hata alýrsýnýz ve instance baþlamaz.
+
+SPFILE’dan PFILE oluþturma;
+SQL> CREATE PFILE FROM SPFILE;
+SQL> CREATE PFILE=’/…/initOMERDB.ora’ from SPFILE=’/…/spfileOMERDB.ora’;
+
+PFILE’dan SPFILE oluþturma;
+SQL> CREATE SPFILE FROM PFILE;
+SQL> CREATE SPFILE=’/…/spfileOMERDB.ora’ from PFILE=’/…/initOMERDB.ora’;
+
+Memoryden Spfile oluþturmak(11G ve sonrasý)
+SQL> CREATE SPFILE FROM MEMORY;
+
+Memoryden Pfile oluþturmak(11G ve sonrasý)
+SQL> CREATE PFILE FROM MEMORY;
+SQL> CREATE PFILE=’/…/initOMERDB.ora’ FROM MEMORY;
+
+Instance’ý spfile’dan baþlatmak;
+SQL> startup;
+
+Instance’ý pfile’dan baþlatmak;
+SQL> startup pfile=/…./initOMERDB.ora;
+
+Oracle parametrelerini aþaðýdaki yöntemlerle görebiliriz.
+-SQLPlustan “show parameter” yazarak.
+-Ya da “V$PARAMETER” isimli viewi sorgulayarak.
+
+-Parametre deðiþkliði (set) ;
+Alter system set komutu ile yapýlýr, parametreler statik ve dinamik olarak ikiye
+ayrýlýr, dinamik parametreler deðiþiklik yapýnca hemen devreye girer ve geçerli
+olur, statik parametrelerin geçerli olmasý için instance yeniden baþlamalýdýr.
+
+SQL> ALTER SYSTEM SET open_cursors=500 SCOPE=SPFILE SID=’*’ ;
+
+-Parametre resetlemek(reset) ;
+Alter system reset komutu ile yapýlýr, oracle’ýn default deðerine geri dönmüþ olur parametre.
+
+SQL> ALTER SYSTEM RESET open_cursors  SCOPE=SPFILE SID=’*’ ;
+
+SCOPE parametresi 3 tip olabilir
+
+Memory : Yapýlan deðiþikliðin sadece o instance’da geçerli olmasýný istersek.
+SPFILE   : SPFILE güncellenir, yeniden baþlatýlana kadar aktif olmaz.(statik parametreler)
+BOTH     : Hem o instance’ý hem SPFILE’ý günceller.
+SID        : RAC sistemlerde yazýlýr, * tüm instanceler için geçerli olsun demektir.
+
+PFILE (Parametre File):
+-Dosyanýn default ismi initSID.ora þeklindedir.
+-Dosyanýn yeri default olarak windows için “ORACLE_HOMEdatabase” dizini
+linux için “ORACLE_HOMEdbs” dir.
+-Pfile metin tabanlý bir dosyadýr, herhangi bir metin editörüyle açýlýp editlenebilir.
+-RMAN ile yedeklenemez.
+
+SPFILE (Server Parameter File):
+-Dosyanýn default ismi “spfileSID.ora” þeklindedir.
+-Dosyanýn yeri default olarak windows için “ORACLE_HOME/database” dizini linux için “ORACLE_HOME/dbs” dir.
+-Dosya binary bir dosyadýr, editlenemez.
+-RMAN ile backupý alýnabilir.(RMAN> backup spfile)
+ya da her backupda otomatik olarak spfile backup’ý da alýnmasýný istersek
+RMAN’de aþaðýdaki gibi konfigürasyon deðiþikliði yapmalýyýz.
+
+RMAN> CONFIGURE CONTROLFILE AUTOBACKUP ON;
+Artýk alýnan her db yedeðinde otomatik control file ve spfile’da yedeklenir.

@@ -1,0 +1,37 @@
+SQL>archive log list;   archivelog bakarýz.
+$mkdir -p '/u01/backup/fbackup/DB_%T_%U'; tam backup sadece DB olarak2 dosya yazar.
+RMAN>list backup summary (yedek olup olmadýðýný görürüz.)
+R>crosscheck backup;
+R>delete expired backup;
+PC YER VAR MI BAK df -h;
+
+----image copy----6 DOSYA OLUÞUR. http://www.juliandyke.com/Research/RMAN/ImageCopies.php
+R>backup as copy database format '/u01/backup/IMAGEE_%T_%U';
+list backup;
+list backup summary;
+S>select*from name v$dbfile;
+--S>select*from v$tablespace;
+R>list copy; (image copy olarak aldýklarýmýz)image copy sýkýþtýrýlamaz ve birebir kopyadýr.boyutu ilede.
+
+ÖNEMLÝ NOT:*echo $ORACLE_HOME/dbs içindeki dosyalar geri getiririz.*
+
+--GERi GETÝRMEK ÝÇÝN;--
+R>shutdown immediate;
+R>startup mount;
+R>restore tablespace users;
+R>recover tablespace users;
+
+listener baþlatmak için;
+$lsnrctl start
+$lsnrctl status
+$lsnrctl stop
+s>show parameter local_listener
+
+select * form v$pwfile_users (bütün kullanýcýlarý gösterir)
+S>Show user; o anki kullanýcýyý göster.
+
+
+ANA YEDEK ALAM ÝÞLEMLERÝ https://taliphakanozturk.wordpress.com/tag/yedek-kurtarma-yontemleri/
+tüm yedekleme iþlem http://www.mustafabektastepe.com/2013/03/26/rman-2/
+YEDEK https://taliphakanozturk.wordpress.com/2011/06/01/rman-teknik-referans/
+bütün oracle https://docs.oracle.com/cd/B16351_01/doc/server.102/b14196/toc.htm

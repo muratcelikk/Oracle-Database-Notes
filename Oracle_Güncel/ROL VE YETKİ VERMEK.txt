@@ -1,0 +1,142 @@
+https://www.vertica.com/docs/9.2.x/HTML/Content/Authoring/SQLReferenceManual/Statements/GRANT/GRANTStatements.htm?tocpath=SQL%20Reference%20Manual%7CSQL%20Statements%7CGRANT%20Statements%7C_____0
+
+***CREATE:
+	CREATE USER kullanıcı IDENTIFIED BY şifre; //Kullanıcı oluştur ve şifre ver// 
+	CREATE ROLE role_name			   //Rol oluştur// 
+
+***GRANT:
+	GRANT role_name TO kullanıcı;  //Kulanıcıyı role atma
+     	
+	GRANT SELECT ANY table TO role_name;   			     //Role bütün Tablolarda listeleme yetkisi verme
+	GRANT SELECT, INSERT, UPDATE, DELETE ANY table TO role_name; //Role tablolarda listele, ekle, güncelle, silme yetkisi verme
+    	
+	GRANT SELECT ON table TO role_name;   			     //Role tek bir Tabloya listeleme yetkisi verme
+	GRANT SELECT, INSERT, UPDATE, DELETE ON table TO role_name;  //Role tabloda listele, ekle, güncelle, silme yetkisi verme
+
+     Önemli	
+	GRANT CREATE SESSİON TO müller;	 //Kullanıcının sisteme bağlanması için Session yetkisi verme
+
+***DROP:
+	DROP USER murat;	  //Kullanıcıyı silme
+	DROP USER murat CASCADE;  //Kulanıcı Şeması altında nesneler varsa bunlarıda silmek için CASCADE kullanılır.
+	DROP ROLE role_name;	  //Rolü sil
+	
+***************************************************************************************************************************
+EXAMPLES:::
+--->Kullanıcı oluştur ve şifre ver.           --->Kullanıcıyı güncelleme
+CREATE USER müller IDENTIFIED BY 12u34t; 	ALTER USER müller IDENTIFIED BY 12u34t;
+CREATE USER pegam  IDENTIFIED BY 4fu64t;
+CREATE USER camoka IDENTIFIED BY 5676tt;
+CREATE USER zanka IDENTIFIED BY a678tt;
+
+--->Kullanıcı sisteme bağlanabilmesi için yetki verme.//Session yetkisi
+GRANT CREATE SESSİON TO müller;	
+GRANT CREATE SESSİON TO pegam;		
+GRANT CREATE SESSİON TO camoka;	
+GRANT CREATE SESSİON TO zanka;	
+
+--->Role oluştur      
+CREATE ROLE YONETIM;   
+
+--->Rolü kullanıcıya atama   
+GRANT YONETIM TO müller;	
+GRANT YONETIM TO pegam;		
+GRANT YONETIM TO camoka;	
+GRANT YONETIM TO zanka;	
+
+--->Role yetki ver.
+GRANT SELECT ANY table TO YONETIM;  //Bütün tabloları listeleme
+GRANT SELECT ON employee TO YONETIM;  //employee  tablosunu listeleme
+
+--->Role yetki al.
+revoke SELECT ON HASTALAR1 from YONETIM;
+
+alter user ali default role none;   // ile ali’ye verilen tüm rolleri disable(pasif) edebiliriz.
+
+alter user ali default role all;    // ile de ali’ye verilen tüm rolleri enable(aktif) ederiz.
+
+grant SORGU TO YONETIM;  //Rolü role ata
+
+****************************************************************************************
+DB link oluşturma ve silme:
+CREATE DATABASE LİNK
+CREATE PUBLİC DATABASE LİNK
+DROP PUBLİC DATABASE LİNK
+
+create table ABONE_ADRES as select * from schema_name.abone_adres@PRODDB;   PRODDB de schema altındaki tabloyu dbmizde yaratma..
+**************************
+
+
+----------chris kullanıcısına yetkiler ver.--------
+SQL> grant CREATE SESSION, ALTER SESSION, CREATE DATABASE LINK, -
+  CREATE MATERIALIZED VIEW, CREATE PROCEDURE, CREATE PUBLIC SYNONYM, -
+  CREATE ROLE, CREATE SEQUENCE, CREATE SYNONYM, CREATE TABLE, - 
+  CREATE TRIGGER, CREATE TYPE, CREATE VIEW, UNLIMITED TABLESPACE -
+  TO chris;
+
+*********************GRANT VE REVOKE**************YETKİLER*****
+İki türlü yetki var.  System privileges ve Object privileges.
+
+System privileges: DB’nin tamamına etki eden yetkilerdir.  
+Kullanıcı yaratma, yetki verme gibi.
+
+Object privileges: Table,View,Sequence ve index gibi objelere verilen yetkilerdir. 
+Bir şemanın bir objesi üzerinde yapılır. Mesela HR’ın employees tablosuna select çekebilme yetkisi.
+*******************************************
+
+Bir kullanıcıya atanmış yetkiler:
+select * from dba_sys_privs where grantee = ‘USERNAME’;
+
+Bir role için kullanıcıya yetki verme, kaldırma (Örn: DBA role) :
+grant dba to username;
+revoke dba from username;
+
+Yalnızca select yapma yetkili, yetkisi sorgu ile sınırlı kullanıcı role’ü oluşturma:
+create role readonly YONETIM;
+grant create session to readonly;
+grant select any table to readonly;
+–Eğer diğer şemalarda da sorgu yapılması isteniyorsa:
+grant select any dictionary to readonly;
+
+–Bu role’ü yalnızca sorgu yapması istenen kullanıcılar için atama:
+grant readonly to username;
+
+
+------*WITH GRANT OPTION----//Yetkiyi REVOKE ile alamayız CASCADE ile alırız. Hata mesajında da yazar 
+Bu yetkike dereceli yetkilendirme denir. Bir kullanıcıya verdiğin yetkileri, bu kullanıcının da başkasına verebilmesi için kullanılır. 
+Örneğin; Ahmet kullanıcısına bir tabloya SELECT ve UPDATE işlemleri için yetki verdin ayrıca GRANT OPTION yetkisi verdin. 
+Ahmet kullanıcı Ali kullanıcısına aynı yetkileri verebilir. 
+Ahmet, Ali kullanıcısına DELETE yetkisi veremez çünkü kendisine böyle bir yetki verilmedi.
+
+GRANT SELECT ON Cust TO [login] -- Yetkili derecelendirme
+WITH GRANT OPTION
+
+--------------
+	DENY : Engellemek için kullanılır.
+DENY CREATE TABLE to [login] -- Tablo create yetkisini kullanıcımdan geri aldım.
+DENY SELECT,UPDATE ON Orders TO [login] -- Orders tablosuna SELECT ve UPDATE yapamasın.
+
+--------------------
+	MATERIALIZED VIEW yetkilerini dw_manager rolüne verme,
+GRANT
+     CREATE ANY MATERIALIZED VIEW
+   , ALTER ANY MATERIALIZED VIEW
+   , DROP ANY MATERIALIZED VIEW
+   , QUERY REWRITE
+   , GLOBAL QUERY REWRITE
+   TO dw_manager
+   WITH ADMIN OPTION;
+
+*************SYSDBA ve SYSOPER Sistem Yetkileri***********
+SYSDBA: Bu yetki ile veritabanına bağlanan kullanıcı tüm işlemleri yapabilme iznine sahip olur. Bunlardan bazıları:
+STARTUP ve SHUTDOWN işlemlerini gerçekleştirir.
+CREATE DATABASE (Veritabanı yaratma)
+ALTER DATABASE: open, mount, back up, karakter seti değiştirme
+CREATE SPFILE (Sistem Parametre Dosyası yaratma)
+ARCHIVELOG ve RECOVERY 
+
+SYSOPER: Bu yetki ile veritabanına bağlanan kullanıcı temel işletim görevlerini yapma iznine sahip olur, fakat kullanıcı verilerini göremez.
+STARTUP ve SHUTDOWN işlemlerini gerçekleştirir.
+ALTER DATABASE: open, mount, back up 
+CREATE SPFILE (Sistem Parametre Dosyası yaratma)
+ARCHIVELOG ve RECOVERY 

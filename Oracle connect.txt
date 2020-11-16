@@ -1,0 +1,98 @@
+YETKÝLENDÝRME https://docs.oracle.com/cd/B19306_01/server.102/b14200/statements_4003.htm#i2058207 (tüm yetki iþlemleri grafiði)
+	      https://docs.oracle.com/cd/B19306_01/server.102/b14200/statements_8003.htm#i2126688
+
+SQL>create user hr identified by hr;
+--User created.
+SQL>grant sysdba to hr
+--Grant Succeeded
+SQL>alter user hr identified by hr;
+--User altered
+SQL>alter user hr account unlock;
+--User altered.
+
+Kullanýcýyý silmek için: SQL>drop user pegamis cascade;
+				User dropped.
+$sqlplus pegamis/123@PRODDB    (gibi oluþturduðumuz kullanýcýdan girmek için:)
+SQL>grant all privileges to pegamis;         
+    Grant succeeded.
+
+tablolar: https://docs.oracle.com/cd/E11882_01/nav/sql_keywords-t.htm
+silmek için: drop user hr cascade; (dene)
+Esc-->u vi editörü undo.
+
+//**************CONNECTÝON TYPES:********************////////////////////////////////////
+NOT:@ iþareti varsa ya EZ connect yada TNS connect tir.
+
+==================>>>>>>>>>>Local Connect;<<<<<<<<<<===================================
+kodu yaz-->CONNECT.
+
+LOCAL CONNECT:
+$sqlplus / as sysdba  |sysoper veya $sqlplus / AS SYSDBA  | SYSOPER
+$sqlplus hr as sysdba  þifre ister:hr
+$sqlplus hr/hr as sysdba  þifresiz giriþ." /hr" þifredir.(önce hr yetki ver)
+
+=================>>>>>>>>>>TNS Connect;---(3 yer)<<<<<===============================================
+TNS.ORA-->CONNECT.
+TNS çalýþýp çalýþmadýðýna bakarýz: $tnsping PRODDB (DB adý)
+
+$ $ORACLE_HOME (oracle yolunu gösterir)
+$cd /u01/app/oracle/product/11.2.0/db/network/admin gir.(admin e git ve tnsnames.ora deðiþtir. Sonra giriþi dene.)
+$ls
+$vi tnsnames.ora  (tnsnames.ora içinde SERVÝCE_NAME(veya SID), HOST, birde baþtaki adý deðiþtiririz. SID ve host önemli.)
+-----------------TNSNAMES-@DB11G-----------------vi ile içini aç.---------
+PRODDB =
+  (DESCRIPTION =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = oracle.localdomain)(PORT = 1521))
+    (CONNECT_DATA =
+      (SERVER = DEDÝCATED)
+      (SERVICE_NAME = PRODDB)
+    )
+  ) 
+--------------------------------------------------------------------------------
+---listener öylesine bakmak için ekli..
+------------------LÝSTENER------------------vi ile içi.
+LISTENER =
+  (DESCRIPTION_LIST =
+    (DESCRIPTION =
+        (ADDRESS = (PROTOCOL = TCP)(HOST = oracle.localdomain)(PORT = 1521))
+        (ADDRESS = (PROTOCOL = IPC)(KEY = EXTPROC1521))
+    )
+  )
+
+ADR_BASE_LISTENER = /u01/app/oracle
+-------------------------------------------------------------------------------------
+
+TNS CONNECT:
+$sqlplus sys/oracle@PRODDB as sysdba
+$sqlplus pegamis/123@PRODDB  (böyle girmek için kullanýcýyý PRÝVÝLEGES yapmalýyýz)
+	yani: SQL>grant all privileges to pegamis;         
+              Grant succeeded.
+
+========================>>>>>>EZ Connect;<==@10.2.2.215:1521/PRODDB-======================================en saðlam connect/(uzak baðlantý içinde)================
+PATH-->CONNECT
+tns çalýþmazsa EZ connect yaparýz.
+
+önce export $ORACLE_HOME=PRODDB
+EZ CONNECT:
+sqlplus sys/oracle@10.2.2.215:1521/PRODDB AS SYSDBA |as sysdba
+sqlplus sys/oracle@10.2.2.215:/PRODDB AS SYSDBA |as sysdba
+
+
+NOT:
+SQL> ho veya "HO"  çýkar $ gelir. $exit yapýnca SQL> geri döner.
+oracle site:https://ss64.com/ora/syntax.html
+
+archivelog açma:
+STARTUP MOUNT;
+ARCHIVE LOG START;
+ALTER DATABASE ARCHIVELOG;
+ALTER DATABASE OPEN;
+
+SHUTDOWN
+
+Shutdown a database instance.
+This is a SQL*Plus command (not part of standard SQL)
+
+oracle ayrýntýlý: https://docs.oracle.com/cd/B19306_01/nav/idx-t.htm
+connection type: https://blogs.oracle.com/oraclemagazine/making-database-connections
+https://www.academia.edu/10666104/Oracle_Database_Mimarisi

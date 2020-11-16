@@ -1,0 +1,12 @@
+SQL>select*from v$dbfile;   (oradata içindekiler silinirse.ÖR: example.dbf, users.dbf, cotrolfile gibi)
+
+Ýmage copy geridönüþ; (OFFLÝNE YAPILAMAZSA)
+SQL> alter tablespace users offline immediate;
+R>switch taplespace users to copy;  ("/u01/backup/IMAGEE_20190628_data_D-PRODDB..."þeklinde yolu belirtir)
+R>recover tablespace users;
+SQL> alter tablespace users online;
+
+DUPLÝCATE;
+ayný sürüm olmalý, 
+$sqlplus / as sysdba
+S>select log_mode from v$database; (ana sistem "ARCHÝVELOG" modunda olmalý)

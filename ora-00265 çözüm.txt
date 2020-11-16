@@ -1,0 +1,56 @@
+SQL> startup force mount
+ORACLE instance started.
+
+Total System Global Area 1503199232 bytes
+Fixed Size 2288584 bytes
+Variable Size 905970744 bytes
+Database Buffers 587202560 bytes
+Redo Buffers 7737344 bytes
+Database mounted.
+SQL> alter database archivelog;
+alter database archivelog
+*
+ERROR at line 1:
+ORA-00265: instance recovery required, cannot set ARCHIVELOG mode
+
+ 
+
+// Solution:
+
+SQL> select open_mode from v$database;
+
+OPEN_MODE
+——————–
+MOUNTED
+
+// Open your database and shutdown it normally, as follow:
+ora hata:::
+SQL> alter database open;
+
+Database altered.
+
+SQL> shutdown immediate;
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+
+// Now startup database in mount state:
+SQL> startup mount
+ORACLE instance started.
+
+Total System Global Area 1503199232 bytes
+Fixed Size 2288584 bytes
+Variable Size 905970744 bytes
+Database Buffers 587202560 bytes
+Redo Buffers 7737344 bytes
+Database mounted.
+
+// Now issue following to convert database into archivelog mode:
+SQL> alter database archivelog;
+
+Database altered.
+
+// Now open database:
+SQL> alter database open;
+
+Database altered.

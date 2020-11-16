@@ -1,0 +1,45 @@
+instance durumunu kontrol etmek için: 
+SQL>Select status from v$instance; (startted yazarsa "nomount"tadýr)
+
+S>startup nomount;       (instance açýlýr)
+S>alter database mount;  (database mount moda çevirmek için
+
+S>startup mount;         (direk mount modda açmak için.)
+S>startup                (mount moddur)
+
+S>alter database open;   (verilerimize ulaþýrýz.)
+
+database i mount modda açmak; 
+database açýksa önce kapat; 
+S>shutdown immediate, shutdown, shutdown abort.
+S>alter database mount
+S>alter database archivelog (Archivelog moduna getir)
+
+---------DUPLÝCATE(KLON ALMA)------------
+SOURCE                    
+
+DESTÝNATÝON
+tnsnames.ora
+2 host sayý olarak gir
+listener ora
+tnsping por1
+tnsping por2
+por2 deyken $ssh oracle@192.. pro1 geçmek için
+sqlplus / as sysdba
+por1 deyiz
+archivelog list açýk olmalý pro1
+exit
+pro2 ye geç
+https://www.youtube.com/watch?v=n_6zfbvGX6w
+
+tns deðiþtir
+listener  yoksa oluþtur.
+þimdi ping at..
+SOURCE DB11G GEL
+archivelog aç
+rman geç
+rman backup al..ilk 2 
+backupset atar.
+
+mkdir -p ....db11g
+

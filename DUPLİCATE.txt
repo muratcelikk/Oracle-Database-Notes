@@ -1,0 +1,61 @@
+RMAN> CONNECT AUXILIARY SYS/sysdba@dupdb; # duplicate database instance
+connected to auxiliary database: DUPDB (not mounted)
+**************source*************************
+db yazýlým
+netca
+dbca (db11g)
+--------------backup-----------------
+$ rman target=/
+
+RMAN> CONFIGURE CONTROLFILE AUTOBACKUP ON;
+RMAN> BACKUP DATABASE PLUS ARCHIVELOG (1.açmadan 2.backup almaz)
+finished controlfile
+--------spfile----scp----2 dosya gönder
+bridge moda al.
+create pfile from spfile; (varsa gerek yok--spfileDB11G.ora)
+initorapwDB11G gönder..
+
+-------------tnsnames ora--------
+DB11G-DESTINATION =
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = ol5-112-dup2)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (ORACLE_SID = DB11G)
+    )
+  )
+
+*******************destination*************
+db yazýlým
+$ ORACLE_SID=DB11G; export ORACLE_SID
+$ sqlplus / as sysdba
+SQL> STARTUP NOMOUNT;
+
+
+----------------tnsnames.ora-------------------
+SID_LIST_LISTENER =
+  (SID_LIST =
+    (SID_DESC =
+      (GLOBAL_DBNAME = DB11G.WORLD)
+      (ORACLE_HOME = /u01/app/oracle/product/11.2.0/db_1)
+      (SID_NAME = DB11G)
+    )
+  )
+
+LISTENER =
+  (DESCRIPTION_LIST =
+    (DESCRIPTION =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = ol5-112-dup2.localdomain)(PORT = 1521))
+    )
+    (DESCRIPTION =
+      (ADDRESS = (PROTOCOL = IPC)(KEY = EXTPROC1521))
+    )
+  )
+
+ADR_BASE_LISTENER = /u01/app/oracle
+
+
+--------------SON AÞAMA------------
+HER ÝKÝ TARAF BRÝDGE OLACAK..ETC HOSTLARIDA DEÐÝÞECEK.
+$ rman TARGET sys/password@DB11G-SOURCE AUXILIARY sys/password@DB11G-DESTINATION

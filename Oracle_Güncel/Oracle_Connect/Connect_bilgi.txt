@@ -1,0 +1,87 @@
+$ sqlplus "/as sysdba"
+SQL*Plus: Release 10.2.0.4.0 - Production on Fri Aug 14 15:42:07 2009
+Copyright (c) 1982, 2005, Oracle.  All rights reserved.
+Connected to:
+Oracle Database 10g Enterprise Edition Release 10.2.0.1.0 - Production
+With the Partitioning, OLAP and Data Mining options
+
+2)İlk kullanıcımızı yaratıyoruz.
+***SQL> create user firstu identified by 12345;
+User created.
+
+3)Kullanıcıya sisteme bağlanabilmesi için create session hakkı veriyoruz.
+***SQL> grant create session to firstu;
+Grant succeeded.
+
+4)Daha sonra ikinci kullanıcımızı yaratıyoruz.
+***SQL> create user secondu identified by secondu;
+User created.
+
+5)İkinci kullanıcıya tablo yaratbilme hakkı olan create table,oturum açabilme hakkı olan create session ve 
+bağlı olduğu tablespace’te yazabilme hakkı olan resource veriyoruz.
+***SQL> grant create session,create table,resource to secondu;
+Grant succeeded.
+
+6)sqlplus tan çıkmadan ikinci kullanıcı ile bağlanıyoruz.
+SQL> conn secondu/secondu;
+Connected.
+SQL> show user
+USER is "SECONDU"
+
+7)ikinci kullanıcı ile bir tablo yaratıp içine bir satırlık bir bilgi giriyoruz.
+SQL> create table xx(aa varchar2(5));
+Table created.
+SQL> insert into xx values ('HH');
+1 row created.
+SQL> commit;
+Commit complete.
+
+8)Daha sonra birinci kullanıcı ile bağlanıyoruz sqlplus tan çıkmadan.
+SQL> conn firstu/firstu;
+Connected.
+SQL> show user
+USER is "FIRSTU"
+9)Aşağıdaki sorguyu çalıştırmasını istiyoruz,kullanıcı bunu çalıştıryor fakat hata alıyor çünkü birinci kullanıcının ikinci kullanının tablosunda select izni yok.
+SQL> select * from secondu.xx;
+select * from secondu.xx
+*
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+10)İkinci kullanıcı ile bağlanıp kendi tablosuna birinci kullanıcının bağlanıp select yapabilmesi için gerekli izni veriyoruz.
+SQL> conn secondu/secondu
+Connected.
+SQL> show user
+USER is "SECONDU"
+SQL> grant select on xx to firstu;
+Grant succeeded.
+
+11)birinci kullanıcı ile tekrar bağlanıp aynı sorguyu tekrar denediğimizde artık select yapabildiğimizi görüyoruz.
+SQL> conn firstu/firstu
+Connected.
+SQL> show user
+USER is "FIRSTU"
+SQL> select * from secondu.xx;
+AA
+-----
+HH
+
+
+12)Bu sefer birinci kullanıcı ile ikinci kullanıcının tablosuna insert yapmayı denedğimizde hata alıyoruz bunun sebebide birinci kullanıcının ikinci kullanıcının tablsounda insert yapmaya hakkı olmadığını görüyoruz.
+SQL> insert into secondu.xx values ('JK');
+insert into secondu.xx values ('JK')
+*
+ERROR at line 1:
+ORA-01031: insufficient privileges
+
+12)Bu sefer ikinci kullanıcı ile bağlanıp hem insert hemde delete hakkı verip bu işi bitiriyoruz.Denemesinide size bırakıyorum.
+SQL> conn secondu/secondu
+Connected.
+SQL> show user
+USER is "SECONDU"
+SQL> grant select,insert,delete on xx to firstu;
+Obje ve system bazında nasıl izinlerin verildiğini gördük ,komutumuz grant idi,peki verilen izinleri geri almak istersek ne yapmamız gerekir,bunun komutuda REVOKE tur.
+Örnek olarak bakarsak,
+SQL> revoke create any table from deneme1;
+SQL> revoke execute any procedure from deneme;
+SQL> revoke select on xx from firstu;

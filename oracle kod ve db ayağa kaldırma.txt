@@ -1,0 +1,41 @@
+1-nomount(spfile, pfile okunur.)spfile içindeki control file lokasyonunu okur.--(control file PATH oku)
+2-mount  (control file okunur.)                                               --(control file içindeki DOSYALARA ULAÞ)
+3-open   (ulaþtýðý dosyalarý açar.)					      --(dosyalarý AÇ.)
+
+connected to an idle instance.(instance açýlmadý)
+sql>startup (instance açýldý)
+
+sql>startup nomount;
+sql>alter database mount;
+sql>startup;
+sql>alter database open;
+
+sql>shutdown abort (veritabaný tutarsýz kapatýr.)
+sql>shutdown transaction;(veritabaný tutarlý kapatýr.) commit eder ve kapatýr.
+sql>shutdown(shu) immediate; (rollback atýp kapatýr.)
+#rman target /
+RMAN> backup as backupset database; (veritabanýnýn tam yedeðini almak için.)
+
+#ls -ltrh (dosyalarý tarihe göre sýralama)
+find /u01/ -name "netca" (bulmak: find /dosya yolu baþlangýcý/ -name "aranacak dosya veya klasör" )
+lsn#lsnrctl status (listener veritabanýný dinliyor mu)
+ps -ef|grep pmon (veritabaný çalýþýyor mu?)
+
+--------------**********
+(oracle arka kapý giriþi):
+# sqlplus /nolog 
+SQL> conn / as sysdba
+
+locate dosya_adi veya sona *
+man find
+grep -i aranan_kelime dosya_adi
+tail -f dosya_adi
+-------------------------------------------------
+oracle remove;https://docs.oracle.com/cd/E11882_01/install.112/e47689/remove_oracle_sw.htm#LADBI1339
+
+Use the optional flag -paramfile to provide a path to a parameter file
+In the following example, the deinstall command is in the path /u01/app/oracle/product/11.2.0/dbhome_1/deinstall, and it uses a parameter file in the software owner location /home/usr/oracle:
+
+$ cd /u01/app/oracle/product/11.2.0/dbhome_1/deinstall
+$ ./deinstall -paramfile /home/usr/oracle/my_db_paramfile.tmpl
+

@@ -1,0 +1,16 @@
+select name from v$database; //db adı
+select log_mode  v$Database; //db log modu
+select status from v$instance;  //db durumunu kontrol etme
+echo $ORACLE_HOME            /u01/app/oracle/product/11.2.3/db
+cat /etc/oratab  /dblerin yollarını gösterir.
+
+$export ORACLE_SID=PRODDB //db ye geçiş.(oracle $ yok) 
+$echo  $ORACLE_SID    //HANGİ DB DEYİZ GÖRÜRÜZ.
+
+
+
+SQL> select instance_name from v$instance;
+
+INSTANCE_NAME
+ ----------------
+ POCDB

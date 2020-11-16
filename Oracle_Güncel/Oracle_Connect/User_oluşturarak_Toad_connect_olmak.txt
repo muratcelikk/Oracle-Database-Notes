@@ -1,0 +1,66 @@
+cmd
+sqlplus
+'/' as sysdba;
+
+Connected to an idle instance.
+SQL>startup;
+
+SQL> create c##user murat identified by 123;   //kullanıcı ve şifre oluştur.
+SQL> grant create session to c##murat;	       //session/giriş yetkisi verme
+SQL> grant connect, resource, dba to c##murat; //kullanıcıya dba yetkisi verme
+
+select username from dba_users;  //kullanıcıları listeleme
+----->sql idle ise:::>startup    //shutdown immediate;
+toad
+kullanıcı adı: c##murat
+şifre: 123
+
+create table employee (
+emp_id number,
+emp_name varchar2(20),
+emp_surnam varchar2(20),
+emp_department varchar2(20)
+);
+
+INSERT INTO employee (emp_id, emp_name,emp_surnam,emp_department) values (1,'murat', 'cilek', 'IT');
+INSERT INTO employee (emp_id, emp_name,emp_surnam,emp_department) values (2,'mesut', 'bulut', 'sistem');
+INSERT INTO employee (emp_id, emp_name,emp_surnam,emp_department) values (3,'ayla', 'demir', 'evrak');
+INSERT INTO employee (emp_id, emp_name,emp_surnam,emp_department) values (4,'tarkan', 'salcı', 'IT');
+INSERT INTO employee (emp_id, emp_name,emp_surnam,emp_department) values (5,'emre', 'çelik', 'sistem');
+INSERT INTO employee (emp_id, emp_name,emp_surnam,emp_department) values (6,'altan', 'taş', 'mühendis');
+INSERT INTO employee (emp_id, emp_name,emp_surnam,emp_department) values (7,'şaban', 'gül', 'camcı');
+INSERT INTO employee (emp_id, emp_name,emp_surnam,emp_department) values (8,'veli', 'alkan', 'sistem');
+INSERT INTO employee (emp_id, emp_name,emp_surnam,emp_department) values (9,'umay', 'duman', 'futbolcu');
+INSERT INTO employee (emp_id, emp_name,emp_surnam,emp_department) values (10,'gülistan', 'kar', 'ev hanımı');
+
+
+create table dept (
+emp_id number,
+emp_name varchar2(10)
+);
+
+
+
+INSERT INTO dept (emp_id, emp_name) values (1,'murat');
+INSERT INTO dept (emp_id, emp_name) values (2,'mesut');
+INSERT INTO dept (emp_id, emp_name) values (3,'ayla');
+INSERT INTO dept (emp_id, emp_name) values (4,'tarkan');
+INSERT INTO dept (emp_id, emp_name) values (5,'emre');
+
+create table deger (
+deger_pone number
+);
+
+
+INSERT INTO deger (deger_pone) values (2);
+INSERT INTO deger (deger_pone) values (-2);
+INSERT INTO deger (deger_pone) values (4);
+INSERT INTO deger (deger_pone) values (-4);
+INSERT INTO deger (deger_pone) values (-3);
+INSERT INTO deger (deger_pone) values (0);
+INSERT INTO deger (deger_pone) values (2);
+
+select sum(deger_pone) as positive from deger where deger_pone>0;
+select sum(deger_pone) as negative from deger where deger_pone<0;
+
+select*from(select sum(deger_pone)from deger where deger_pone>0) cross join (select sum(deger_pone) from deger where deger_pone<0);

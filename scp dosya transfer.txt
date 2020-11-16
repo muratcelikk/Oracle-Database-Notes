@@ -1,0 +1,14 @@
+Öncelikle virtual Machine "BRÝDGED ADAPTER" olmalý.
+Sonra sana bilgisayar "root" olacak.
+
+$scp *.zip root@10.2.2.162:/u01/orainstall
+$scp p13390677_112040_Linux-x86-64_1of7 p13390677_112040_Linux-x86-64_2of7 root@10.2.2.162:/u01/orainstall
+
+$pscp p13390677_112040_Linux-x86-64_1of7 p13390677_112040_Linux-x86-64_2of7 root@10.2.2.162:/u01/orainstall (WÝNDOWS için baþta p olmalý "pscp")
+
+sanaldan ana bilgisayara veri göndermek için sadece "-r" ekleriz.
+$scp -r p13390677_112040_Linux-x86-64_1of7 std@10.2.2.162:/home/std
+
+winscp kurarak direkt klasörede atabiliriz. Putty ve filezip de.
+
+NOT:scp iletmezse bridged demi bak. sonra eth0 yukardan seçerek yenile. ifconfig de ip doðrumu bak.

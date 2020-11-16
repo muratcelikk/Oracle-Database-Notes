@@ -1,0 +1,9 @@
+oracle base https://oracle-base.com/articles/11g/oracle-db-11gr2-installation-on-oracle-linux-6
+
+db kitap https://www.academia.edu/10666104/Oracle_Database_Mimarisi
+
+db consept https://docs.oracle.com/cd/E11882_01/server.112/e40540/toc.htm
+
+duplicate: duplicate http://manuoracle.blogspot.com/2013/05/duplicate-database-using-rman-backups.html
+
+Oracle and Linux download: oracle indir: https://edelivery.oracle.com/osdc/faces/Home.jspx
